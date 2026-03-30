@@ -1,0 +1,68 @@
+.{
+    .name = .zig_nri,
+    .version = "0.0.0+179-dev",
+    .fingerprint = 0x29dd9e82309626c8, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.15.2",
+    .dependencies = .{
+        .nvidia_nri = .{
+            .url = "https://github.com/NVIDIA-RTX/NRI/archive/ac5d5b17a3266b7d5fea578d07c80f2191078224.tar.gz",
+            .hash = "N-V-__8AAEDOIABdkgAByLvWp5lFQWVqAMowB89bP7RcussM",
+        },
+        .vulkan_headers = .{
+            .url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.4.345.tar.gz",
+            .hash = "N-V-__8AAEmOPgKPg4A_E180o4enTnzBT1MuP4MdCTY4YCOR",
+            .lazy = true,
+        },
+        .directx_headers = .{
+            .url = "https://github.com/microsoft/DirectX-Headers/archive/refs/tags/v1.619.1.tar.gz",
+            .hash = "N-V-__8AAGDkQAC-N44dhfT9Szcv4b6j5gq_bJe_mnBt60EM",
+            .lazy = true,
+        },
+        .nvidia_nvtx = .{
+            .url = "https://github.com/NVIDIA/NVTX/archive/refs/tags/v3.4.0.tar.gz",
+            .hash = "N-V-__8AACTu1QDOzFlatXUAvQjwpqF_R-fr6IRgrwbmpOn6",
+            .lazy = true,
+        },
+        .vulkan_ma = .{
+            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/b3cbbb43ea3a506dffe10759e205a41c27c35ae2.tar.gz",
+            .hash = "N-V-__8AAEQTPwCBpcfOoQPJ-G1anGhST2Wk5Okcs5xHa25w",
+            .lazy = true,
+        },
+        .nvidia_ngx = .{
+            .url = "https://github.com/NVIDIA/DLSS/archive/refs/tags/v310.5.3.tar.gz",
+            .hash = "N-V-__8AAKa1ayJ_slFB-pTS_BYcyg--_QN3ffVT9xPgVA2W",
+            .lazy = true,
+        },
+        .amd_ffx = .{
+            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/archive/refs/tags/v1.1.4.tar.gz",
+            .hash = "N-V-__8AAHBHrRrWyBqiK53OWNLGcrHU0_D9p0Ggj2mEtI7n",
+            .lazy = true,
+        },
+        .d3d12_ma = .{
+            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator/archive/0fa62ed3a0a69b73230a8ec1faa752d4061c8dc8.tar.gz",
+            .hash = "N-V-__8AAPOuLQAMMzRcZXQ4M5aU6HSNUhSDJaSumAuVBCmv",
+            .lazy = true,
+        },
+        .amd_ags = .{
+            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/AGS_SDK/archive/refs/tags/v6.3.0.tar.gz",
+            .hash = "N-V-__8AAOSX8QVgvTuQtahRif5fN4mLK1oOdIn3ERPSlvQZ",
+            .lazy = true,
+        },
+        .nvidia_nvapi = .{
+            .url = "https://github.com/NVIDIA/nvapi/archive/9296d671e71608d6d6b7749ed93989af4ada8858.tar.gz",
+            .hash = "N-V-__8AAMiylADK3cSt8rFZemgiBgw7fCPxqPnelHi58Bfx",
+            .lazy = true,
+        },
+        .nvidia_shadermake = .{
+            .url = "https://github.com/NVIDIA-RTX/ShaderMake/archive/18f5a344e7ca8fa65daaf079d07bc8ce38453e05.tar.gz",
+            .hash = "N-V-__8AAHvKAQCiRyl7w40xDH22g65Yt5oXdQV7lQ6HMjJz",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "LICENSE",
+    },
+}
