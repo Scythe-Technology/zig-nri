@@ -64,5 +64,6 @@
         "build.zig.zon",
         "src",
         "LICENSE",
+        "NRI-LICENSE",
     },
 }

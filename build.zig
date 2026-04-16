@@ -230,6 +230,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .link_libc = true,
             .link_libcpp = true,
+            .sanitize_c = .off,
         });
         libNRI_NONE = b.addLibrary(.{
             .linkage = .static,
@@ -260,6 +261,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .link_libc = true,
             .link_libcpp = true,
+            .sanitize_c = .off,
         });
         libNRI_D3D11 = b.addLibrary(.{
             .linkage = .static,
@@ -271,7 +273,7 @@ pub fn build(b: *std.Build) !void {
 
         mod_NRI_D3D11.addIncludePath(dep_directx_headers.path("include"));
 
-        mod_NRI_D3D11.addIncludePath(b.path("src/windows/pix"));
+        // mod_NRI_D3D11.addIncludePath(b.path("src/windows/pix"));
 
         mod_NRI_D3D11.addCSourceFiles(.{
             .root = dep_nri.path(""),
@@ -307,6 +309,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .link_libc = true,
             .link_libcpp = true,
+            .sanitize_c = .off,
         });
         libNRI_D3D12 = b.addLibrary(.{
             .linkage = .static,
@@ -319,7 +322,7 @@ pub fn build(b: *std.Build) !void {
         mod_NRI_D3D12.addIncludePath(dep_directx_headers.path("include"));
         mod_NRI_D3D12.addIncludePath(dep_d3d12_ma.path("include"));
 
-        mod_NRI_D3D12.addIncludePath(b.path("src/windows/pix"));
+        // mod_NRI_D3D12.addIncludePath(b.path("src/windows/pix"));
 
         mod_NRI_D3D12.addCSourceFiles(.{
             .root = dep_nri.path(""),
@@ -365,6 +368,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .link_libc = true,
             .link_libcpp = true,
+            .sanitize_c = .off,
         });
         libNRI_VK = b.addLibrary(.{
             .linkage = .static,
@@ -401,13 +405,6 @@ pub fn build(b: *std.Build) !void {
             },
             .flags = VK_FLAGS.items,
         });
-        mod_NRI_VK.addCSourceFiles(.{
-            .root = dep_vulkan_ma.path("include"),
-            .files = &[_][]const u8{
-                "vk_mem_alloc.h",
-            },
-            .flags = VK_FLAGS.items,
-        });
         mod_NRI_VK.linkLibrary(libNRI_Shared);
 
         if (target.result.os.tag.isDarwin()) {
@@ -424,6 +421,7 @@ pub fn build(b: *std.Build) !void {
             .optimize = optimize,
             .link_libc = true,
             .link_libcpp = true,
+            .sanitize_c = .off,
         });
         libNRI_Validation = b.addLibrary(.{
             .linkage = .static,
@@ -450,6 +448,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
         .link_libc = true,
         .link_libcpp = true,
+        .sanitize_c = .off,
     });
     const libNRI = b.addLibrary(.{
         .linkage = if (NRI_STATIC_LIBRARY) .static else .dynamic,
