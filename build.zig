@@ -501,7 +501,7 @@ pub fn build(b: *std.Build) !void {
 
     b.installArtifact(libNRI);
 
-    const mod = b.addModule("zig_nri", .{
+    const mod = b.addModule("root", .{
         .root_source_file = b.path("src/lib.zig"),
         .target = target,
         .optimize = optimize,

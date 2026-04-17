@@ -47,12 +47,14 @@ pub const BufferUploadDesc = extern struct {
 
 pub const ResourceGroupDesc = extern struct {
     memory_location: MemoryLocation,
-    textures: ?[*]?*Texture,
-    texture_num: u32,
-    buffers: ?[*]?*Buffer,
-    buffer_num: u32,
+    textures: [*]?*Texture,
+    texture_num: u32 = 0,
+    buffers: [*]?*Buffer,
+    buffer_num: u32 = 0,
     /// desired chunk size (but can be greater if a resource doesn't fit), 256 Mb if 0
-    preferred_memory_size: u64,
+    preferred_memory_size: u64 = 0,
+    /// [-1; 1]: low < 0, normal = 0, high > 0
+    residency_priority: f32 = 0,
 };
 
 pub const FormatProps = extern struct {

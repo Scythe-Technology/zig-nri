@@ -8,6 +8,8 @@ The Zig wrapper is not complete yet, but a few wrapper are implemented, such as 
 
 **Status**: Incomplete, but usable with NRI's interfaces and data structures.
 
+**NRI Version**: `179`
+
 ## Issues
 For any issues while using this library, please open an issue in this repository. When problems are related to NRI, the issue can still be made on this repository and upstreamed to NRI if needed.
 

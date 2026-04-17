@@ -1,16 +1,16 @@
 .{
     .name = .zig_nri,
-    .version = "0.0.0+179-dev",
+    .version = "0.0.0+179",
     .fingerprint = 0x29dd9e82309626c8, // Changing this has security and trust implications.
     .minimum_zig_version = "0.15.2",
     .dependencies = .{
         .nvidia_nri = .{
-            .url = "https://github.com/NVIDIA-RTX/NRI/archive/ac5d5b17a3266b7d5fea578d07c80f2191078224.tar.gz",
-            .hash = "N-V-__8AAEDOIABdkgAByLvWp5lFQWVqAMowB89bP7RcussM",
+            .url = "https://github.com/NVIDIA-RTX/NRI/archive/v179.tar.gz",
+            .hash = "N-V-__8AAKuUIQAk6Q8lCvPObtLEgs8LXPR9uWewzRRu-deV",
         },
         .vulkan_headers = .{
-            .url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.4.345.tar.gz",
-            .hash = "N-V-__8AAEmOPgKPg4A_E180o4enTnzBT1MuP4MdCTY4YCOR",
+            .url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.4.349.tar.gz",
+            .hash = "N-V-__8AAC1ZbAIG2kVq3iPpAWaOlDTQ3MOyOyQQR0o_-9ez",
             .lazy = true,
         },
         .directx_headers = .{
@@ -19,8 +19,8 @@
             .lazy = true,
         },
         .nvidia_nvtx = .{
-            .url = "https://github.com/NVIDIA/NVTX/archive/refs/tags/v3.4.0.tar.gz",
-            .hash = "N-V-__8AACTu1QDOzFlatXUAvQjwpqF_R-fr6IRgrwbmpOn6",
+            .url = "https://github.com/NVIDIA/NVTX/archive/refs/tags/v3.5.0.tar.gz",
+            .hash = "N-V-__8AAGyu2gAt9nvt7pAQILqlX5SpouAOJ9a12c9icjhZ",
             .lazy = true,
         },
         .vulkan_ma = .{
@@ -39,8 +39,8 @@
             .lazy = true,
         },
         .d3d12_ma = .{
-            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator/archive/0fa62ed3a0a69b73230a8ec1faa752d4061c8dc8.tar.gz",
-            .hash = "N-V-__8AAPOuLQAMMzRcZXQ4M5aU6HSNUhSDJaSumAuVBCmv",
+            .url = "https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator/archive/96e58ad6f45f2e9ade7c631adba8a27db1635cb7.tar.gz",
+            .hash = "N-V-__8AAFewLQAtgkw-7CuKAsis09fGHrtyA0oftss3MD5S",
             .lazy = true,
         },
         .amd_ags = .{
@@ -49,8 +49,8 @@
             .lazy = true,
         },
         .nvidia_nvapi = .{
-            .url = "https://github.com/NVIDIA/nvapi/archive/9296d671e71608d6d6b7749ed93989af4ada8858.tar.gz",
-            .hash = "N-V-__8AAMiylADK3cSt8rFZemgiBgw7fCPxqPnelHi58Bfx",
+            .url = "https://github.com/NVIDIA/nvapi/archive/9b181ea572f680327fe01a14a0f1f41c78034104.tar.gz",
+            .hash = "N-V-__8AAN8RmAB_SJDaP-Imbzot9VPYC-2Ee-nvv0o2UoOD",
             .lazy = true,
         },
         .nvidia_shadermake = .{

@@ -328,6 +328,11 @@ pub const Format = enum(u8) {
     R9_G9_B9_E5_UFLOAT,
 
     // Block-compressed
+    // Block-compressed (requires "features.textureCompressionBC")
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d11/texture-block-compression-in-direct3d-11?source=recommendations
+    // https://registry.khronos.org/DataFormat/specs/1.4/dataformat.1.4.html#S3TC
+    // https://registry.khronos.org/DataFormat/specs/1.4/dataformat.1.4.html#RGTC
+    // https://registry.khronos.org/DataFormat/specs/1.4/dataformat.1.4.html#BPTC
     /// + . . . . . . . . . . . . . . .
     BC1_RGBA_UNORM,
     /// + . . . . . . . . . . . . . . .
@@ -356,6 +361,88 @@ pub const Format = enum(u8) {
     BC7_RGBA_UNORM,
     /// + . . . . . . . . . . . . . . .
     BC7_RGBA_SRGB,
+
+    // Block-compressed: Ericsson Texture Compression (requires "features.textureCompressionETC2")
+    // https://registry.khronos.org/DataFormat/specs/1.4/dataformat.1.4.html#ETC2
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_A1_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_A1_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_A8_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_RGB8_A8_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_R11_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_R11_SNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_R11_G11_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ETC2_R11_G11_SNORM,
+
+    // Block-compressed: Adaptive Scalable Texture Compression (requires "features.textureCompressionASTC")
+    // https://registry.khronos.org/DataFormat/specs/1.4/dataformat.1.4.html#ASTC
+    /// + . . . . . . . . . . . . . . .
+    ASTC_4X4_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_4X4_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_5X4_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_5X4_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_5X5_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_5X5_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_6X5_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_6X5_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_6X6_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_6X6_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X5_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X5_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X6_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X6_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X8_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_8X8_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X5_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X5_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X6_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X6_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X8_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X8_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X10_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_10X10_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_12X10_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_12X10_SRGB,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_12X12_UNORM,
+    /// + . . . . . . . . . . . . . . .
+    ASTC_12X12_SRGB,
 
     // Depth-stencil
     /// . . . . + . + + + . . . . . . .
@@ -906,7 +993,7 @@ pub const Layout = enum(u8) { // Compatible "AccessBits":
     // Special
     /// https://microsoft.github.io/DirectX-Specs/d3d/D3D12EnhancedBarriers.html#d3d12_barrier_layout_undefined
     UNDEFINED,
-    /// ALL access, required for "SharingMode::SIMULTANEOUS" (but may be suboptimal if "features.unifiedTextureLayouts" is not supported)
+    /// ALL access, required for "SharingMode::SIMULTANEOUS" (but may be suboptimal if "features.unified_texture_layouts" is not supported)
     GENERAL,
     /// NONE (use "after.stages = StageBits::NONE")
     PRESENT,
@@ -2011,7 +2098,8 @@ pub const ColorWriteBits = enum(u8) {
 /// https://docs.vulkan.org/refpages/latest/refpages/source/VkPipelineDepthStencilStateCreateInfo.html
 /// https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_depth_stencil_desc
 pub const StencilDesc = extern struct {
-    compare_op: CompareOp = .NONE, // "compareOp != NONE", expects "CmdSetStencilReference"
+    /// "compareOp != NONE", expects "CmdSetStencilReference"
+    compare_op: CompareOp = .NONE,
     fail_op: StencilOp = .KEEP,
     pass_op: StencilOp = .KEEP,
     depth_fail_op: StencilOp = .KEEP,
@@ -2022,12 +2110,14 @@ pub const StencilDesc = extern struct {
 pub const DepthAttachmentDesc = extern struct {
     compare_op: CompareOp = .NONE,
     write: bool = false,
-    bounds_test: bool = false, // requires "features.depthBoundsTest", expects "CmdSetDepthBounds"
+    /// requires "features.depth_bounds_test", expects "CmdSetDepthBounds"
+    bounds_test: bool = false,
 };
 
 pub const StencilAttachmentDesc = extern struct {
     front: StencilDesc = .{},
-    back: StencilDesc = .{}, // requires "features.independentFrontAndBackStencilReferenceAndMasks" for "back.writeMask"
+    /// requires "features.independent_front_and_back_stencil_reference_and_masks" for "back.write_mask"
+    back: StencilDesc = .{},
 };
 
 /// https://docs.vulkan.org/refpages/latest/refpages/source/VkPipelineColorBlendAttachmentState.html
@@ -2052,9 +2142,12 @@ pub const OutputMergerDesc = extern struct {
     depth: DepthAttachmentDesc,
     stencil: StencilAttachmentDesc,
     depth_stencil_format: Format,
-    logic_op: LogicOp, // requires "features.logicOp"
-    view_mask: u32 = 0, // if non-0, requires "viewMaxNum > 1"
-    multiview: Multiview = .FLEXIBLE, // if "viewMask != 0", requires "features.(xxx)Multiview"
+    /// requires "features.logic_op"
+    logic_op: LogicOp,
+    /// if non-0, requires "view_max_num > 1"
+    view_mask: u32 = 0,
+    /// if "view_mask != 0", requires "features.(xxx)_multiview"
+    multiview: Multiview = .FLEXIBLE,
 
     pub const Options = struct {
         colors: []const ColorAttachmentDesc,
@@ -2081,15 +2174,20 @@ pub const OutputMergerDesc = extern struct {
 
 /// https://docs.vulkan.org/guide/latest/robustness.html
 pub const Robustness = enum(u8) {
-    DEFAULT, // don't care, follow device settings (VK level when used on a device)
-    OFF, // no overhead, no robust access (out-of-bounds access is not allowed)
-    VK, // minimal overhead, partial robust access
-    D3D12, // moderate overhead, D3D12-level robust access (requires "VK_EXT_robustness2", soft fallback to VK mode)
+    /// don't care, follow device settings (VK level when used on a device)
+    DEFAULT,
+    /// no overhead, no robust access (out-of-bounds access is not allowed)
+    OFF,
+    /// minimal overhead, partial robust access
+    VK,
+    /// moderate overhead, D3D12-level robust access (requires "VK_EXT_robustness2", soft fallback to VK mode)
+    D3D12,
 };
 
 // It's recommended to use "NRI.hlsl" in the shader code
 pub const ShaderDesc = extern struct {
     stage: StageFlags,
+    /// see "features.shader_bytecode_xxx"
     bytecode: [*]const u8,
     size: u64,
     entry_point_name: ?[*:0]const u8 = null,
@@ -2170,9 +2268,9 @@ pub const StoreOp = enum(u8) {
 pub const ResolveOp = enum(u8) {
     /// resolves the source samples to their average value
     AVERAGE,
-    /// resolves the source samples to their minimum value, requires "features.resolveOpMinMax"
+    /// resolves the source samples to their minimum value, requires "features.resolve_op_min_max"
     MIN,
-    /// resolves the source samples to their maximum value, requires "features.resolveOpMinMax"
+    /// resolves the source samples to their maximum value, requires "features.resolve_op_min_max"
     MAX,
 };
 
@@ -2190,8 +2288,8 @@ pub const RenderingDesc = extern struct {
     color_num: u32 = 0,
     depth: AttachmentDesc, // may be treated as "depth-stencil"
     stencil: AttachmentDesc, // (optional) separation is needed for multisample resolve
-    shading_rate: ?*const Descriptor = null, // requires "tiers.shadingRate >= 2"
-    view_mask: u32 = 0, // if non-0, requires "viewMaxNum > 1"
+    shading_rate: ?*const Descriptor = null, // requires "tiers.shading_rate >= 2"
+    view_mask: u32 = 0, // if non-0, requires "view_max_num > 1"
 
     pub const Options = struct {
         colors: []const AttachmentDesc,
@@ -2216,11 +2314,11 @@ pub const RenderingDesc = extern struct {
 /// https://docs.vulkan.org/refpages/latest/refpages/source/VkQueryType.html
 pub const QueryType = enum(u8) {
     TIMESTAMP, // uint64_t
-    TIMESTAMP_COPY_QUEUE, // uint64_t (requires "features.copyQueueTimestamp"), same as "TIMESTAMP" but for a "COPY" queue
+    TIMESTAMP_COPY_QUEUE, // uint64_t (requires "features.copy_queue_timestamp"), same as "TIMESTAMP" but for a "COPY" queue
     OCCLUSION, // uint64_t
-    PIPELINE_STATISTICS, // see "PipelineStatisticsDesc" (requires "features.pipelineStatistics")
-    ACCELERATION_STRUCTURE_SIZE, // uint64_t, requires "features.rayTracing"
-    ACCELERATION_STRUCTURE_COMPACTED_SIZE, // uint64_t, requires "features.rayTracing"
+    PIPELINE_STATISTICS, // see "PipelineStatisticsDesc" (requires "features.pipeline_statistics")
+    ACCELERATION_STRUCTURE_SIZE, // uint64_t, requires "features.ray_tracing"
+    ACCELERATION_STRUCTURE_COMPACTED_SIZE, // uint64_t, requires "features.ray_tracing"
     MICROMAP_COMPACTED_SIZE, // uint64_t, requires "features.micromap"
 };
 
@@ -2246,11 +2344,11 @@ pub const PipelineStatisticsDesc = extern struct {
     tess_evaluation_shader_invocation_num: u64 = 0,
     compute_shader_invocation_num: u64 = 0,
 
-    // If "features.meshShaderPipelineStats"
+    // If "features.mesh_shader_pipeline_stats"
     task_shader_invocation_num: u64 = 0,
     mesh_shader_invocation_num: u64 = 0,
 
-    // D3D12: if "features.meshShaderPipelineStats"
+    // D3D12: if "features.mesh_shader_pipeline_stats"
     mesh_shader_primitive_num: u64 = 0,
 };
 
@@ -2672,7 +2770,7 @@ pub const DeviceDesc = extern struct {
         memory: u8,
     };
 
-    pub const Features = packed struct(u32) {
+    pub const Features = packed struct(u64) {
         // Bigger
         get_memory_desc2: bool, // "GetXxxMemoryDesc2" support (VK: requires "maintenance4", D3D: supported)
         enhanced_barriers: bool, // VK: supported, D3D12: requires "AgilitySDK", D3D11: unsupported
@@ -2706,8 +2804,14 @@ pub const DeviceDesc = extern struct {
         non_constant_buffer_root_descriptor_offset: bool, // see "SetRootDescriptorDesc" (unsupported only in D3D11)
         mutable_descriptor_type: bool, // see "DescriptorType::MUTABLE"
         unified_texture_layouts: bool, // allows to use "GENERAL" everywhere: https://docs.vulkan.org/refpages/latest/refpages/source/VK_KHR_unified_image_layouts.html
+        texture_compression_bc: bool, // all "BC" texture formats are supported
+        texture_compression_etc2: bool, // all "ETC2" texture formats are supported
+        texture_compression_astc: bool, // all "ASTC" texture formats are supported
+        shader_bytecode_dxbc: bool, // DXBC can be passed to "ShaderDesc::bytecode"
+        shader_bytecode_dxil: bool, // DXIL can be passed to "ShaderDesc::bytecode"
+        shader_bytecode_spirv: bool, // SPIRV can be passed to "ShaderDesc::bytecode"
 
-        _: u2 = 0,
+        _: u28 = 0,
     };
 
     pub const ShaderFeatures = packed struct(u32) {
