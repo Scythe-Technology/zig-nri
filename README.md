@@ -8,6 +8,8 @@ The Zig wrapper is not complete yet, but a few wrapper are implemented, such as 
 
 **Status**: Incomplete, but usable with NRI's interfaces and data structures.
 
+## Issues
+For any issues while using this library, please open an issue in this repository. When problems are related to NRI, the issue can still be made on this repository and upstreamed to NRI if needed.
 
 ## Usage
 
@@ -64,4 +66,4 @@ can be used to set the following options:
 
 ## Licenses
 - zig-nri: [MIT License](LICENSE).
-- NRI: [MIT License](NRI-LICENSE)
+- NRI: [MIT License](NRI-LICENSE).
