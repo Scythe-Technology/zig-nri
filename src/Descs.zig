@@ -2084,12 +2084,12 @@ pub const ShaderDesc = extern struct {
     stage: StageFlags,
     bytecode: [*]const u8,
     size: u64,
-    entry_point_name: ?[*]const u8 = null,
+    entry_point_name: ?[*:0]const u8 = null,
 
     pub const Options = struct {
         stage: StageFlags,
         bytecode: []const u8,
-        entry_point_name: ?[*]const u8 = null,
+        entry_point_name: ?[*:0]const u8 = null,
     };
     pub inline fn from(opts: Options) @This() {
         return .{
