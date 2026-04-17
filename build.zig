@@ -500,4 +500,12 @@ pub fn build(b: *std.Build) !void {
         mod_NRI.linkLibrary(libNRI_Validation.?);
 
     b.installArtifact(libNRI);
+
+    const mod = b.addModule("zig_nri", .{
+        .root_source_file = b.path("src/lib.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    mod.linkLibrary(libNRI);
 }

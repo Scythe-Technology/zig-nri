@@ -7,7 +7,7 @@ const Device = Descs.Device;
 const Dim_t = Descs.Dim_t;
 const Result = Descs.Result;
 
-pub const SwapChain = opaque {};
+pub const SwapChain = Descs.SwapChain;
 
 /// Special "initialValue" for "CreateFence" needed to create swap chain related semaphores
 pub const SWAPCHAIN_SEMAPHORE: u64 = @as(u64, @bitCast(@as(i64, -1)));
@@ -62,34 +62,34 @@ pub const SwapChainBits = enum(u8) {
 
 pub const WindowsWindow = extern struct { // Expects "WIN32" platform macro
     /// HWND
-    hwnd: ?*anyopaque,
+    hwnd: ?*anyopaque = null,
 };
 
 pub const X11Window = extern struct { // Expects "NRI_ENABLE_XLIB_SUPPORT"
     /// Display
-    dpy: ?*anyopaque,
+    dpy: ?*anyopaque = null,
     /// Window
-    window: u64,
+    window: u64 = 0,
 };
 
 pub const WaylandWindow = extern struct { // Expects "NRI_ENABLE_WAYLAND_SUPPORT"
     /// wl_display
-    display: ?*anyopaque,
+    display: ?*anyopaque = null,
     /// wl_surface
-    surface: ?*anyopaque,
+    surface: ?*anyopaque = null,
 };
 
 pub const MetalWindow = extern struct { // Expects "APPLE" platform macro
     /// CAMetalLayer
-    ca_metal_layer: ?*anyopaque,
+    ca_metal_layer: ?*anyopaque = null,
 };
 
 pub const Window = extern struct {
     // Only one entity must be initialized
-    windows: WindowsWindow,
-    x11: X11Window,
-    wayland: WaylandWindow,
-    metal: MetalWindow,
+    windows: WindowsWindow = .{},
+    x11: X11Window = .{},
+    wayland: WaylandWindow = .{},
+    metal: MetalWindow = .{},
 };
 
 // SwapChain textures will be created as "color attachment" resources
@@ -145,9 +145,9 @@ pub const DisplayDesc = extern struct {
 
 // Threadsafe: yes
 pub const SwapChainInterface = extern struct {
-    CreateSwapChain: *const fn (device: *Device, swapChainDesc: *const SwapChainDesc, swapChain: *?*SwapChain) callconv(.c) Result,
+    CreateSwapChain: *const fn (device: *Device, swapChainDesc: *const SwapChainDesc, swapChain: **SwapChain) callconv(.c) Result,
     DestroySwapChain: *const fn (swapChain: *SwapChain) callconv(.c) void,
-    GetSwapChainTextures: *const fn (swapChain: *const SwapChain, textureNum: *u32) callconv(.c) ?[*]?*Texture,
+    GetSwapChainTextures: *const fn (swapChain: *const SwapChain, textureNum: *u32) callconv(.c) [*]const *Texture,
 
     // Returns "FAILURE" if swap chain's window is outside of all monitors
     GetDisplayDesc: *const fn (swapChain: *SwapChain, displayDesc: *DisplayDesc) callconv(.c) Result, // Returns "FAILURE" if swap chain's window is outside of all monitors
@@ -156,4 +156,20 @@ pub const SwapChainInterface = extern struct {
     AcquireNextTexture: *const fn (swapChain: *SwapChain, acquireSemaphore: *Fence, textureIndex: *u32) callconv(.c) Result,
     WaitForPresent: *const fn (swapChain: *SwapChain) callconv(.c) Result, // call once right before input sampling (must be called starting from the 1st frame)
     QueuePresent: *const fn (swapChain: *SwapChain, releaseSemaphore: *Fence) callconv(.c) Result,
+
+    pub fn create(self: SwapChainInterface, device: *Device, swap_chain_desc: SwapChainDesc) !*SwapChain {
+        var swap_chain: *SwapChain = undefined;
+        try self.CreateSwapChain(device, &swap_chain_desc, &swap_chain).success();
+        return swap_chain;
+    }
+
+    pub fn destroy(self: SwapChainInterface, swap_chain: *SwapChain) void {
+        self.DestroySwapChain(swap_chain);
+    }
+
+    pub fn getTextures(self: SwapChainInterface, swap_chain: *SwapChain) []const *Texture {
+        var texture_num: u32 = 0;
+        const textures = self.GetSwapChainTextures(swap_chain, &texture_num);
+        return textures[0..texture_num];
+    }
 };

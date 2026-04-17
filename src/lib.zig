@@ -121,32 +121,32 @@ pub const CoreInterface = extern struct {
     // Getting "COMPUTE" and/or "COPY" queues switches VK sharing mode to "VK_SHARING_MODE_CONCURRENT" for resources created without "queueExclusive" flag.
     // This approach is used to minimize number of "queue ownership transfers", but also adds a requirement to "get" all async queues BEFORE creation of
     // resources participating into multi-queue activities. Explicit use of "queueExclusive" removes any restrictions.
-    GetQueue: *const fn (device: *Device, queueType: QueueType, queueIndex: u32, queue: *?*Queue) callconv(.c) Result,
+    GetQueue: *const fn (device: *Device, queueType: QueueType, queueIndex: u32, queue: **Queue) callconv(.c) Result,
 
     // Create (doesn't assume allocation of big chunks of memory on the device, but it happens for some entities implicitly)
-    CreateCommandAllocator: *const fn (queue: *Queue, commandAllocator: *?*CommandAllocator) callconv(.c) Result,
-    CreateCommandBuffer: *const fn (commandAllocator: *CommandAllocator, commandBuffer: *?*CommandBuffer) callconv(.c) Result,
-    CreateFence: *const fn (device: *Device, initialValue: u64, fence: *?*Fence) callconv(.c) Result,
-    CreateDescriptorPool: *const fn (device: *Device, descriptorPoolDesc: *const DescriptorPoolDesc, descriptorPool: *?*DescriptorPool) callconv(.c) Result,
-    CreatePipelineLayout: *const fn (device: *Device, pipelineLayoutDesc: *const PipelineLayoutDesc, pipelineLayout: *?*PipelineLayout) callconv(.c) Result,
-    CreateGraphicsPipeline: *const fn (device: *Device, graphicsPipelineDesc: *const GraphicsPipelineDesc, pipeline: *?*Pipeline) callconv(.c) Result,
-    CreateComputePipeline: *const fn (device: *Device, computePipelineDesc: *const ComputePipelineDesc, pipeline: *?*Pipeline) callconv(.c) Result,
-    CreateQueryPool: *const fn (device: *Device, queryPoolDesc: *const QueryPoolDesc, queryPool: *?*QueryPool) callconv(.c) Result,
-    CreateSampler: *const fn (device: *Device, samplerDesc: *const SamplerDesc, sampler: *?*Descriptor) callconv(.c) Result,
-    CreateBufferView: *const fn (bufferViewDesc: *const BufferViewDesc, bufferView: *?*Descriptor) callconv(.c) Result,
-    CreateTextureView: *const fn (textureViewDesc: *const TextureViewDesc, textureView: *?*Descriptor) callconv(.c) Result,
+    CreateCommandAllocator: *const fn (queue: *Queue, commandAllocator: **CommandAllocator) callconv(.c) Result,
+    CreateCommandBuffer: *const fn (commandAllocator: *CommandAllocator, commandBuffer: **CommandBuffer) callconv(.c) Result,
+    CreateFence: *const fn (device: *Device, initialValue: u64, fence: **Fence) callconv(.c) Result,
+    CreateDescriptorPool: *const fn (device: *Device, descriptorPoolDesc: *const DescriptorPoolDesc, descriptorPool: **DescriptorPool) callconv(.c) Result,
+    CreatePipelineLayout: *const fn (device: *Device, pipelineLayoutDesc: *const PipelineLayoutDesc, pipelineLayout: **PipelineLayout) callconv(.c) Result,
+    CreateGraphicsPipeline: *const fn (device: *Device, graphicsPipelineDesc: *const GraphicsPipelineDesc, pipeline: **Pipeline) callconv(.c) Result,
+    CreateComputePipeline: *const fn (device: *Device, computePipelineDesc: *const ComputePipelineDesc, pipeline: **Pipeline) callconv(.c) Result,
+    CreateQueryPool: *const fn (device: *Device, queryPoolDesc: *const QueryPoolDesc, queryPool: **QueryPool) callconv(.c) Result,
+    CreateSampler: *const fn (device: *Device, samplerDesc: *const SamplerDesc, sampler: **Descriptor) callconv(.c) Result,
+    CreateBufferView: *const fn (bufferViewDesc: *const BufferViewDesc, bufferView: **Descriptor) callconv(.c) Result,
+    CreateTextureView: *const fn (textureViewDesc: *const TextureViewDesc, textureView: **Descriptor) callconv(.c) Result,
 
     // Destroy
-    DestroyCommandAllocator: *const fn (commandAllocator: ?*CommandAllocator) callconv(.c) void,
-    DestroyCommandBuffer: *const fn (commandBuffer: ?*CommandBuffer) callconv(.c) void,
-    DestroyDescriptorPool: *const fn (descriptorPool: ?*DescriptorPool) callconv(.c) void,
-    DestroyBuffer: *const fn (buffer: ?*Buffer) callconv(.c) void,
-    DestroyTexture: *const fn (texture: ?*Texture) callconv(.c) void,
-    DestroyDescriptor: *const fn (descriptor: ?*Descriptor) callconv(.c) void,
-    DestroyPipelineLayout: *const fn (pipelineLayout: ?*PipelineLayout) callconv(.c) void,
-    DestroyPipeline: *const fn (pipeline: ?*Pipeline) callconv(.c) void,
-    DestroyQueryPool: *const fn (queryPool: ?*QueryPool) callconv(.c) void,
-    DestroyFence: *const fn (fence: ?*Fence) callconv(.c) void,
+    DestroyCommandAllocator: *const fn (commandAllocator: *CommandAllocator) callconv(.c) void,
+    DestroyCommandBuffer: *const fn (commandBuffer: *CommandBuffer) callconv(.c) void,
+    DestroyDescriptorPool: *const fn (descriptorPool: *DescriptorPool) callconv(.c) void,
+    DestroyBuffer: *const fn (buffer: *Buffer) callconv(.c) void,
+    DestroyTexture: *const fn (texture: *Texture) callconv(.c) void,
+    DestroyDescriptor: *const fn (descriptor: *Descriptor) callconv(.c) void,
+    DestroyPipelineLayout: *const fn (pipelineLayout: *PipelineLayout) callconv(.c) void,
+    DestroyPipeline: *const fn (pipeline: *Pipeline) callconv(.c) void,
+    DestroyQueryPool: *const fn (queryPool: *QueryPool) callconv(.c) void,
+    DestroyFence: *const fn (fence: *Fence) callconv(.c) void,
 
     // Memory
     AllocateMemory: *const fn (device: *Device, allocateMemoryDesc: *const AllocateMemoryDesc, memory: *?*Memory) callconv(.c) Result,
@@ -172,10 +172,10 @@ pub const CoreInterface = extern struct {
     // - "memory, offset" pair can be replaced with a "Nri[Device/DeviceUpload/HostUpload/HostReadback]Heap" macro to create a placed resource in the corresponding memory using VMA (AMD Virtual Memory Allocator) implicitly
     GetBufferMemoryDesc2: *const fn (device: *const Device, bufferDesc: *const BufferDesc, memoryLocation: MemoryLocation, memoryDesc: *MemoryDesc) callconv(.c) void, // requires "features.getMemoryDesc2"
     GetTextureMemoryDesc2: *const fn (device: *const Device, textureDesc: *const TextureDesc, memoryLocation: MemoryLocation, memoryDesc: *MemoryDesc) callconv(.c) void, // requires "features.getMemoryDesc2"
-    CreateCommittedBuffer: *const fn (device: *Device, memoryLocation: MemoryLocation, priority: f32, bufferDesc: *const BufferDesc, buffer: *?*Buffer) callconv(.c) Result,
-    CreateCommittedTexture: *const fn (device: *Device, memoryLocation: MemoryLocation, priority: f32, textureDesc: *const TextureDesc, texture: *?*Texture) callconv(.c) Result,
-    CreatePlacedBuffer: *const fn (device: *Device, memory: ?*Memory, offset: u64, bufferDesc: *const BufferDesc, buffer: *?*Buffer) callconv(.c) Result,
-    CreatePlacedTexture: *const fn (device: *Device, memory: ?*Memory, offset: u64, textureDesc: *const TextureDesc, texture: *?*Texture) callconv(.c) Result,
+    CreateCommittedBuffer: *const fn (device: *Device, memoryLocation: MemoryLocation, priority: f32, bufferDesc: *const BufferDesc, buffer: **Buffer) callconv(.c) Result,
+    CreateCommittedTexture: *const fn (device: *Device, memoryLocation: MemoryLocation, priority: f32, textureDesc: *const TextureDesc, texture: **Texture) callconv(.c) Result,
+    CreatePlacedBuffer: *const fn (device: *Device, memory: ?*Memory, offset: u64, bufferDesc: *const BufferDesc, buffer: **Buffer) callconv(.c) Result,
+    CreatePlacedTexture: *const fn (device: *Device, memory: ?*Memory, offset: u64, textureDesc: *const TextureDesc, texture: **Texture) callconv(.c) Result,
 
     // Descriptor set management (entities don't require destroying)
     // - if "ALLOW_UPDATE_AFTER_SET" not used, descriptor sets (and data pointed to by descriptors) must be updated before "CmdSetDescriptorSet"
@@ -316,4 +316,180 @@ pub const CoreInterface = extern struct {
     GetBufferNativeObject: *const fn (buffer: ?*const Buffer) callconv(.c) u64, // ID3D11Buffer*                   | ID3D12Resource*             | VkBuffer
     GetTextureNativeObject: *const fn (texture: ?*const Texture) callconv(.c) u64, // ID3D11Resource*                 | ID3D12Resource*             | VkImage
     GetDescriptorNativeObject: *const fn (descriptor: ?*const Descriptor) callconv(.c) u64, // ID3D11View/ID3D11SamplerState*  | D3D12_CPU_DESCRIPTOR_HANDLE | VkImageView/VkBufferView/VkSampler
+
+    pub fn getQueue(self: CoreInterface, device: *Device, queue_type: QueueType, queue_index: u32) !*Queue {
+        var queue: *Queue = undefined;
+        try self.GetQueue(device, queue_type, queue_index, &queue).success();
+        return queue;
+    }
+
+    pub fn createCommandAllocator(self: CoreInterface, queue: *Queue) !*CommandAllocator {
+        var command_allocator: *CommandAllocator = undefined;
+        try self.CreateCommandAllocator(queue, &command_allocator).success();
+        return command_allocator;
+    }
+    pub fn createCommandBuffer(self: CoreInterface, command_allocator: *CommandAllocator) !*CommandBuffer {
+        var command_buffer: *CommandBuffer = undefined;
+        try self.CreateCommandBuffer(command_allocator, &command_buffer).success();
+        return command_buffer;
+    }
+    pub fn createFence(self: CoreInterface, device: *Device, initial_value: u64) !*Fence {
+        var fence: *Fence = undefined;
+        try self.CreateFence(device, initial_value, &fence).success();
+        return fence;
+    }
+
+    pub fn createPipelineLayout(self: CoreInterface, device: *Device, opts: PipelineLayoutDesc.Options) !*PipelineLayout {
+        var pipeline_layout: *PipelineLayout = undefined;
+        try self.CreatePipelineLayout(device, &.from(opts), &pipeline_layout).success();
+        return pipeline_layout;
+    }
+    pub fn createGraphicsPipeline(self: CoreInterface, device: *Device, opts: GraphicsPipelineDesc.Options) !*Pipeline {
+        var pipeline: *Pipeline = undefined;
+        try self.CreateGraphicsPipeline(device, &.from(opts), &pipeline).success();
+        return pipeline;
+    }
+    pub fn createTextureView(self: CoreInterface, texture_view_desc: TextureViewDesc) !*Descriptor {
+        var texture_view: *Descriptor = undefined;
+        try self.CreateTextureView(&texture_view_desc, &texture_view).success();
+        return texture_view;
+    }
+
+    pub fn createCommittedBuffer(self: CoreInterface, device: *Device, memory_location: MemoryLocation, priority: f32, buffer_desc: BufferDesc) !*Buffer {
+        var buffer: *Buffer = undefined;
+        try self.CreateCommittedBuffer(device, memory_location, priority, &buffer_desc, &buffer).success();
+        return buffer;
+    }
+
+    pub inline fn beginCommandBuffer(self: CoreInterface, command_buffer: *CommandBuffer, descriptor_pool: ?*const DescriptorPool) !void {
+        try self.BeginCommandBuffer(command_buffer, descriptor_pool).success();
+    }
+    pub inline fn cmdSetDescriptorPool(self: CoreInterface, command_buffer: *CommandBuffer, descriptor_pool: *const DescriptorPool) void {
+        self.CmdSetDescriptorPool(command_buffer, descriptor_pool);
+    }
+    pub inline fn cmdSetPipelineLayout(self: CoreInterface, command_buffer: *CommandBuffer, bind_point: BindPoint, pipeline_layout: *const PipelineLayout) void {
+        self.CmdSetPipelineLayout(command_buffer, bind_point, pipeline_layout);
+    }
+    pub inline fn cmdSetDescriptorSet(self: CoreInterface, command_buffer: *CommandBuffer, set_descriptor_set_desc: SetDescriptorSetDesc) void {
+        self.CmdSetDescriptorSet(command_buffer, &set_descriptor_set_desc);
+    }
+    pub inline fn cmdSetRootConstants(self: CoreInterface, command_buffer: *CommandBuffer, set_root_constants_desc: SetRootConstantsDesc) void {
+        self.CmdSetRootConstants(command_buffer, &set_root_constants_desc);
+    }
+    pub inline fn cmdSetRootDescriptor(self: CoreInterface, command_buffer: *CommandBuffer, set_root_descriptor_desc: SetRootDescriptorDesc) void {
+        self.CmdSetRootDescriptor(command_buffer, &set_root_descriptor_desc);
+    }
+    pub inline fn cmdSetPipeline(self: CoreInterface, command_buffer: *CommandBuffer, pipeline: *const Pipeline) void {
+        self.CmdSetPipeline(command_buffer, pipeline);
+    }
+    pub inline fn cmdBarrier(self: CoreInterface, command_buffer: *CommandBuffer, opts: BarrierDesc.Options) void {
+        self.CmdBarrier(command_buffer, &.from(opts));
+    }
+    pub inline fn cmdSetIndexBuffer(self: CoreInterface, command_buffer: *CommandBuffer, buffer: *const Buffer, offset: u64, index_type: IndexType) void {
+        self.CmdSetIndexBuffer(command_buffer, buffer, offset, index_type);
+    }
+    pub inline fn cmdSetVertexBuffers(self: CoreInterface, command_buffer: *CommandBuffer, base_slot: u32, vertex_buffer_descs: []const VertexBufferDesc) void {
+        self.CmdSetVertexBuffers(command_buffer, base_slot, vertex_buffer_descs.ptr, @intCast(vertex_buffer_descs.len));
+    }
+    pub inline fn cmdSetViewports(self: CoreInterface, command_buffer: *CommandBuffer, viewports: []const Viewport) void {
+        self.CmdSetViewports(command_buffer, viewports.ptr, viewports.len);
+    }
+    pub inline fn cmdSetScissors(self: CoreInterface, command_buffer: *CommandBuffer, rects: []const Rect) void {
+        self.CmdSetScissors(command_buffer, rects.ptr, rects.len);
+    }
+    pub inline fn cmdSetStencilReference(self: CoreInterface, command_buffer: *CommandBuffer, front_ref: u8, back_ref: u8) void {
+        self.CmdSetStencilReference(command_buffer, front_ref, back_ref);
+    }
+    pub inline fn cmdSetDepthBounds(self: CoreInterface, command_buffer: *CommandBuffer, bounds_min: f32, bounds_max: f32) void {
+        self.CmdSetDepthBounds(command_buffer, bounds_min, bounds_max);
+    }
+    pub inline fn cmdSetBlendConstants(self: CoreInterface, command_buffer: *CommandBuffer, color: Color32f) void {
+        self.CmdSetBlendConstants(command_buffer, &color);
+    }
+    pub inline fn cmdSetSampleLocations(self: CoreInterface, command_buffer: *CommandBuffer, locations: []const SampleLocation, location_num: Sample_t, sample_num: Sample_t) void {
+        self.CmdSetSampleLocations(command_buffer, locations.ptr, location_num, sample_num);
+    }
+    pub inline fn cmdSetShadingRate(self: CoreInterface, command_buffer: *CommandBuffer, shading_rate_desc: ShadingRateDesc) void {
+        self.CmdSetShadingRate(command_buffer, &shading_rate_desc);
+    }
+    pub inline fn cmdSetDepthBias(self: CoreInterface, command_buffer: *CommandBuffer, depth_bias_desc: DepthBiasDesc) void {
+        self.CmdSetDepthBias(command_buffer, &depth_bias_desc);
+    }
+    pub inline fn cmdBeginRendering(self: CoreInterface, command_buffer: *CommandBuffer, opts: RenderingDesc.Options) void {
+        self.CmdBeginRendering(command_buffer, &.from(opts));
+    }
+    pub inline fn cmdClearAttachments(self: CoreInterface, command_buffer: *CommandBuffer, clear_attachment_descs: []const ClearAttachmentDesc, rects: []const Rect) void {
+        self.CmdClearAttachments(command_buffer, clear_attachment_descs.ptr, clear_attachment_descs.len, rects.ptr, rects.len);
+    }
+    pub inline fn cmdDraw(self: CoreInterface, command_buffer: *CommandBuffer, draw_desc: DrawDesc) void {
+        self.CmdDraw(command_buffer, &draw_desc);
+    }
+    pub inline fn cmdDrawIndexed(self: CoreInterface, command_buffer: *CommandBuffer, draw_indexed_desc: DrawIndexedDesc) void {
+        self.CmdDrawIndexed(command_buffer, &draw_indexed_desc);
+    }
+    pub inline fn cmdDrawIndirect(self: CoreInterface, command_buffer: *CommandBuffer, buffer: *const Buffer, offset: u64, draw_num: u32, stride: u32, count_buffer: ?*const Buffer, count_buffer_offset: u64) void {
+        self.CmdDrawIndirect(command_buffer, buffer, offset, draw_num, stride, count_buffer, count_buffer_offset);
+    }
+    pub inline fn cmdDrawIndexedIndirect(self: CoreInterface, command_buffer: *CommandBuffer, buffer: *const Buffer, offset: u64, draw_num: u32, stride: u32, count_buffer: ?*const Buffer, count_buffer_offset: u64) void {
+        self.CmdDrawIndexedIndirect(command_buffer, buffer, offset, draw_num, stride, count_buffer, count_buffer_offset);
+    }
+    pub inline fn cmdEndRendering(self: CoreInterface, command_buffer: *CommandBuffer) void {
+        self.CmdEndRendering(command_buffer);
+    }
+    pub inline fn cmdDispatch(self: CoreInterface, command_buffer: *CommandBuffer, dispatch_desc: DispatchDesc) void {
+        self.CmdDispatch(command_buffer, &dispatch_desc);
+    }
+    pub inline fn cmdDispatchIndirect(self: CoreInterface, command_buffer: *CommandBuffer, buffer: *const Buffer, offset: u64) void {
+        self.CmdDispatchIndirect(command_buffer, buffer, offset);
+    }
+    pub inline fn cmdCopyBuffer(self: CoreInterface, command_buffer: *CommandBuffer, dst_buffer: *Buffer, dst_offset: u64, src_buffer: *const Buffer, src_offset: u64, size: u64) void {
+        self.CmdCopyBuffer(command_buffer, dst_buffer, dst_offset, src_buffer, src_offset, size);
+    }
+    pub inline fn cmdCopyTexture(self: CoreInterface, command_buffer: *CommandBuffer, dst_texture: *Texture, dst_region: ?*const TextureRegionDesc, src_texture: *const Texture, src_region: ?*const TextureRegionDesc) void {
+        self.CmdCopyTexture(command_buffer, dst_texture, dst_region, src_texture, src_region);
+    }
+    pub inline fn cmdUploadBufferToTexture(self: CoreInterface, command_buffer: *CommandBuffer, dst_texture: *Texture, dst_region: *const TextureRegionDesc, src_buffer: *const Buffer, src_data_layout: *const TextureDataLayoutDesc) void {
+        self.CmdUploadBufferToTexture(command_buffer, dst_texture, dst_region, src_buffer, src_data_layout);
+    }
+    pub inline fn cmdReadbackTextureToBuffer(self: CoreInterface, command_buffer: *CommandBuffer, dst_buffer: *Buffer, dst_data_layout: *const TextureDataLayoutDesc, src_texture: *const Texture, src_region: *const TextureRegionDesc) void {
+        self.CmdReadbackTextureToBuffer(command_buffer, dst_buffer, dst_data_layout, src_texture, src_region);
+    }
+    pub inline fn cmdZeroBuffer(self: CoreInterface, command_buffer: *CommandBuffer, buffer: *Buffer, offset: u64, size: u64) void {
+        self.CmdZeroBuffer(command_buffer, buffer, offset, size);
+    }
+    pub inline fn cmdResolveTexture(self: CoreInterface, command_buffer: *CommandBuffer, dst_texture: *Texture, dst_region: ?*const TextureRegionDesc, src_texture: *const Texture, src_region: ?*const TextureRegionDesc, resolve_op: ResolveOp) void {
+        self.CmdResolveTexture(command_buffer, dst_texture, dst_region, src_texture, src_region, resolve_op);
+    }
+    pub inline fn cmdClearStorage(self: CoreInterface, command_buffer: *CommandBuffer, clear_storage_desc: ClearStorageDesc) void {
+        self.CmdClearStorage(command_buffer, &clear_storage_desc);
+    }
+    pub inline fn cmdResetQueries(self: CoreInterface, command_buffer: *CommandBuffer, query_pool: *QueryPool, offset: u32, num: u32) void {
+        self.CmdResetQueries(command_buffer, query_pool, offset, num);
+    }
+    pub inline fn cmdBeginQuery(self: CoreInterface, command_buffer: *CommandBuffer, query_pool: *QueryPool, offset: u32) void {
+        self.CmdBeginQuery(command_buffer, query_pool, offset);
+    }
+    pub inline fn cmdEndQuery(self: CoreInterface, command_buffer: *CommandBuffer, query_pool: *QueryPool, offset: u32) void {
+        self.CmdEndQuery(command_buffer, query_pool, offset);
+    }
+    pub inline fn cmdCopyQueries(self: CoreInterface, command_buffer: *CommandBuffer, query_pool: *const QueryPool, offset: u32, num: u32, dst_buffer: *Buffer, dst_offset: u64) void {
+        self.CmdCopyQueries(command_buffer, query_pool, offset, num, dst_buffer, dst_offset);
+    }
+    pub inline fn cmdBeginAnnotation(self: CoreInterface, command_buffer: *CommandBuffer, name: [:0]const u8, bgra: u32) void {
+        self.CmdBeginAnnotation(command_buffer, name.ptr, bgra);
+    }
+    pub inline fn cmdEndAnnotation(self: CoreInterface, command_buffer: *CommandBuffer) void {
+        self.CmdEndAnnotation(command_buffer);
+    }
+    pub inline fn endCommandBuffer(self: CoreInterface, command_buffer: *CommandBuffer) !void {
+        try self.EndCommandBuffer(command_buffer).success();
+    }
+
+    pub inline fn queueSubmit(self: CoreInterface, queue: *Queue, opts: QueueSubmitDesc.Options) !void {
+        try self.QueueSubmit(queue, &.from(opts)).success();
+    }
+
+    pub inline fn mapBuffer(self: CoreInterface, buffer: *Buffer, size: u64) []u8 {
+        return @as([*]u8, @ptrCast(self.MapBuffer(buffer, 0, size)))[0..size];
+    }
 };

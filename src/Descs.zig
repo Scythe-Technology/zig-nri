@@ -1,3 +1,5 @@
+const std = @import("std");
+
 // Entities
 /// a synchronization primitive that can be used to insert a dependency between queue operations or between a queue operation and the host
 pub const Fence = opaque {};
@@ -8,12 +10,7 @@ pub const Memory = opaque {};
 /// a buffer object: linear arrays of data
 pub const Buffer = opaque {};
 /// a logical device
-pub const Device = opaque {
-    const DeviceCreation = @import("./extensions/DeviceCreation.zig");
-    pub fn destroy(self: *Device) void {
-        DeviceCreation.destroyDevice(self);
-    }
-};
+pub const Device = opaque {};
 /// a texture object: multidimensional arrays of data
 pub const Texture = opaque {};
 /// a collection of state needed for rendering: shaders + fixed
@@ -138,6 +135,8 @@ pub const Rect = extern struct {
 };
 
 pub const Color32f = extern struct {
+    pub const zeros: Color32f = .{ .x = 0, .y = 0, .z = 0, .w = 0 };
+
     x: f32,
     y: f32,
     z: f32,
@@ -145,6 +144,8 @@ pub const Color32f = extern struct {
 };
 
 pub const Color32ui = extern struct {
+    pub const zeros: Color32ui = .{ .x = 0, .y = 0, .z = 0, .w = 0 };
+
     x: u32,
     y: u32,
     z: u32,
@@ -152,6 +153,8 @@ pub const Color32ui = extern struct {
 };
 
 pub const Color32i = extern struct {
+    pub const zeros: Color32i = .{ .x = 0, .y = 0, .z = 0, .w = 0 };
+
     x: i32,
     y: i32,
     z: i32,
@@ -159,8 +162,8 @@ pub const Color32i = extern struct {
 };
 
 pub const DepthStencil = extern struct {
-    depth: f32,
-    stencil: u8,
+    depth: f32 = 0,
+    stencil: u8 = 0,
 };
 
 pub const Color = extern union {
@@ -983,12 +986,28 @@ pub const TextureBarrierDesc = extern struct {
 
 /// Using "CmdBarrier" inside a rendering pass is allowed, but only for "Layout::INPUT_ATTACHMENT" access transitions
 pub const BarrierDesc = extern struct {
-    global: [*]allowzero GlobalBarrierDesc,
+    global: ?[*]const GlobalBarrierDesc,
     global_num: u32 = 0,
-    buffer: [*]allowzero BufferBarrierDesc,
+    buffer: ?[*]const BufferBarrierDesc,
     buffer_num: u32 = 0,
-    texture: [*]allowzero TextureBarrierDesc,
+    texture: ?[*]const TextureBarrierDesc,
     texture_num: u32 = 0,
+
+    pub const Options = struct {
+        global: []const GlobalBarrierDesc = &.{},
+        buffer: []const BufferBarrierDesc = &.{},
+        texture: []const TextureBarrierDesc = &.{},
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .global = opts.global.ptr,
+            .global_num = @intCast(opts.global.len),
+            .buffer = opts.buffer.ptr,
+            .buffer_num = @intCast(opts.buffer.len),
+            .texture = opts.texture.ptr,
+            .texture_num = @intCast(opts.texture.len),
+        };
+    }
 
     pub fn globals(self: *const BarrierDesc) []GlobalBarrierDesc {
         return self.global[0..self.global_num];
@@ -1582,6 +1601,31 @@ pub const PipelineLayoutDesc = extern struct {
     descriptor_set_num: u32,
     shader_stages: StageFlags,
     flags: PipelineLayoutFlags,
+
+    pub const Options = struct {
+        root_register_space: u32 = 0,
+        root_constants: []const RootConstantDesc = &.{},
+        root_descriptors: []allowzero const RootDescriptorDesc = &.{},
+        root_samplers: []allowzero const RootSamplerDesc = &.{},
+        descriptor_sets: []allowzero const DescriptorSetDesc = &.{},
+        shader_stages: StageFlags = .ALL,
+        flags: PipelineLayoutFlags = .NONE,
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .root_register_space = opts.root_register_space,
+            .root_constants = opts.root_constants.ptr,
+            .root_constant_num = @intCast(opts.root_constants.len),
+            .root_descriptors = opts.root_descriptors.ptr,
+            .root_descriptor_num = @intCast(opts.root_descriptors.len),
+            .root_samplers = opts.root_samplers.ptr,
+            .root_sampler_num = @intCast(opts.root_samplers.len),
+            .descriptor_sets = opts.descriptor_sets.ptr,
+            .descriptor_set_num = @intCast(opts.descriptor_sets.len),
+            .shader_stages = opts.shader_stages,
+            .flags = opts.flags,
+        };
+    }
 };
 
 /// Descriptor pool
@@ -1703,7 +1747,7 @@ pub const InputAssemblyDesc = extern struct {
 };
 
 pub const VertexAttributeD3D = extern struct {
-    semantic_name: [*]const u8,
+    semantic_name: [*:0]const u8,
     semantic_index: u32,
 };
 
@@ -1729,6 +1773,19 @@ pub const VertexInputDesc = extern struct {
     attribute_num: u8,
     streams: [*]const VertexStreamDesc,
     stream_num: u8,
+
+    pub const Options = struct {
+        attributes: []const VertexAttributeDesc = &.{},
+        streams: []const VertexStreamDesc = &.{},
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .attributes = opts.attributes.ptr,
+            .attribute_num = @intCast(opts.attributes.len),
+            .streams = opts.streams.ptr,
+            .stream_num = @intCast(opts.streams.len),
+        };
+    }
 };
 
 pub const VertexBufferDesc = extern struct {
@@ -1792,20 +1849,20 @@ pub const ShadingRateCombiner = enum(u8) {
 ///
 /// enabled if constant != 0 or slope != 0
 pub const DepthBiasDesc = extern struct {
-    constant: f32,
-    clamp: f32,
-    slope: f32,
+    constant: f32 = 0,
+    clamp: f32 = 0,
+    slope: f32 = 0,
 };
 
 pub const RasterizationDesc = extern struct {
-    depth_bias: DepthBiasDesc,
-    fill_mode: FillMode,
-    cull_mode: CullMode,
-    front_counter_clockwise: bool,
-    depth_clamp: bool,
-    line_smoothing: bool, // requires "features.lineSmoothing"
-    conservative_raster: bool, // requires "tiers.conservativeRaster != 0"
-    shading_rate: bool, // requires "tiers.shadingRate != 0", expects "CmdSetShadingRate" and optionally "RenderingDesc::shadingRate"
+    depth_bias: DepthBiasDesc = .{},
+    fill_mode: FillMode = .SOLID,
+    cull_mode: CullMode = .NONE,
+    front_counter_clockwise: bool = false,
+    depth_clamp: bool = false,
+    line_smoothing: bool = false, // requires "features.lineSmoothing"
+    conservative_raster: bool = false, // requires "tiers.conservativeRaster != 0"
+    shading_rate: bool = false, // requires "tiers.shadingRate != 0", expects "CmdSetShadingRate" and optionally "RenderingDesc::shadingRate"
 };
 
 pub const MultisampleDesc = extern struct {
@@ -1946,31 +2003,31 @@ pub const ColorWriteBits = enum(u8) {
 /// https://docs.vulkan.org/refpages/latest/refpages/source/VkPipelineDepthStencilStateCreateInfo.html
 /// https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_depth_stencil_desc
 pub const StencilDesc = extern struct {
-    compare_op: CompareOp, // "compareOp != NONE", expects "CmdSetStencilReference"
-    fail_op: StencilOp,
-    pass_op: StencilOp,
-    depth_fail_op: StencilOp,
-    write_mask: u8,
-    compare_mask: u8,
+    compare_op: CompareOp = .NONE, // "compareOp != NONE", expects "CmdSetStencilReference"
+    fail_op: StencilOp = .KEEP,
+    pass_op: StencilOp = .KEEP,
+    depth_fail_op: StencilOp = .KEEP,
+    write_mask: u8 = 0,
+    compare_mask: u8 = 0,
 };
 
 pub const DepthAttachmentDesc = extern struct {
-    compare_op: CompareOp,
-    write: bool,
-    bounds_test: bool, // requires "features.depthBoundsTest", expects "CmdSetDepthBounds"
+    compare_op: CompareOp = .NONE,
+    write: bool = false,
+    bounds_test: bool = false, // requires "features.depthBoundsTest", expects "CmdSetDepthBounds"
 };
 
 pub const StencilAttachmentDesc = extern struct {
-    front: StencilDesc,
-    back: StencilDesc, // requires "features.independentFrontAndBackStencilReferenceAndMasks" for "back.writeMask"
+    front: StencilDesc = .{},
+    back: StencilDesc = .{}, // requires "features.independentFrontAndBackStencilReferenceAndMasks" for "back.writeMask"
 };
 
 /// https://docs.vulkan.org/refpages/latest/refpages/source/VkPipelineColorBlendAttachmentState.html
 /// https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_render_target_blend_desc
 pub const BlendDesc = extern struct {
-    src_factor: BlendFactor,
-    dst_factor: BlendFactor,
-    op: BlendOp,
+    src_factor: BlendFactor = .ZERO,
+    dst_factor: BlendFactor = .ZERO,
+    op: BlendOp = .ADD,
 };
 
 pub const ColorAttachmentDesc = extern struct {
@@ -1990,6 +2047,28 @@ pub const OutputMergerDesc = extern struct {
     logic_op: LogicOp, // requires "features.logicOp"
     view_mask: u32 = 0, // if non-0, requires "viewMaxNum > 1"
     multiview: Multiview = .FLEXIBLE, // if "viewMask != 0", requires "features.(xxx)Multiview"
+
+    pub const Options = struct {
+        colors: []const ColorAttachmentDesc,
+        depth: DepthAttachmentDesc = .{},
+        stencil: StencilAttachmentDesc = .{},
+        depth_stencil_format: Format = .UNKNOWN,
+        logic_op: LogicOp = .NONE,
+        view_mask: u32 = 0,
+        multiview: Multiview = .FLEXIBLE,
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .colors = opts.colors.ptr,
+            .color_num = @intCast(opts.colors.len),
+            .depth = opts.depth,
+            .stencil = opts.stencil,
+            .depth_stencil_format = opts.depth_stencil_format,
+            .logic_op = opts.logic_op,
+            .view_mask = opts.view_mask,
+            .multiview = opts.multiview,
+        };
+    }
 };
 
 /// https://docs.vulkan.org/guide/latest/robustness.html
@@ -2003,9 +2082,23 @@ pub const Robustness = enum(u8) {
 // It's recommended to use "NRI.hlsl" in the shader code
 pub const ShaderDesc = extern struct {
     stage: StageFlags,
-    bytecode: *const anyopaque,
+    bytecode: [*]const u8,
     size: u64,
     entry_point_name: ?[*]const u8 = null,
+
+    pub const Options = struct {
+        stage: StageFlags,
+        bytecode: []const u8,
+        entry_point_name: ?[*]const u8 = null,
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .stage = opts.stage,
+            .bytecode = opts.bytecode.ptr,
+            .size = @intCast(opts.bytecode.len),
+            .entry_point_name = opts.entry_point_name,
+        };
+    }
 };
 
 pub const GraphicsPipelineDesc = extern struct {
@@ -2018,6 +2111,30 @@ pub const GraphicsPipelineDesc = extern struct {
     shaders: [*]const ShaderDesc,
     shader_num: u32,
     robustness: Robustness = .DEFAULT,
+
+    pub const Options = struct {
+        pipeline_layout: *const PipelineLayout,
+        vertex_input: ?VertexInputDesc.Options = null,
+        input_assembly: InputAssemblyDesc,
+        rasterization: RasterizationDesc,
+        multisample: ?*const MultisampleDesc = null,
+        output_merger: OutputMergerDesc.Options,
+        shaders: []const ShaderDesc,
+        robustness: Robustness = .DEFAULT,
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .pipeline_layout = opts.pipeline_layout,
+            .vertex_input = if (opts.vertex_input) |v| &.from(v) else null,
+            .input_assembly = opts.input_assembly,
+            .rasterization = opts.rasterization,
+            .multisample = opts.multisample,
+            .output_merger = .from(opts.output_merger),
+            .shaders = opts.shaders.ptr,
+            .shader_num = @intCast(opts.shaders.len),
+            .robustness = opts.robustness,
+        };
+    }
 };
 
 pub const ComputePipelineDesc = extern struct {
@@ -2053,7 +2170,7 @@ pub const ResolveOp = enum(u8) {
 
 pub const AttachmentDesc = extern struct {
     descriptor: *Descriptor,
-    clear_value: ClearValue,
+    clear_value: ClearValue = .{ .depth_stencil = .{} },
     load_op: LoadOp = .LOAD,
     store_op: StoreOp = .STORE,
     resolve_op: ResolveOp = .AVERAGE,
@@ -2067,6 +2184,24 @@ pub const RenderingDesc = extern struct {
     stencil: AttachmentDesc, // (optional) separation is needed for multisample resolve
     shading_rate: ?*const Descriptor = null, // requires "tiers.shadingRate >= 2"
     view_mask: u32 = 0, // if non-0, requires "viewMaxNum > 1"
+
+    pub const Options = struct {
+        colors: []const AttachmentDesc,
+        depth: AttachmentDesc = std.mem.zeroes(AttachmentDesc),
+        stencil: AttachmentDesc = std.mem.zeroes(AttachmentDesc),
+        shading_rate: ?*const Descriptor = null,
+        view_mask: u32 = 0,
+    };
+    pub inline fn from(opts: Options) @This() {
+        return .{
+            .colors = opts.colors.ptr,
+            .color_num = @intCast(opts.colors.len),
+            .depth = opts.depth,
+            .stencil = opts.stencil,
+            .shading_rate = opts.shading_rate,
+            .view_mask = opts.view_mask,
+        };
+    }
 };
 
 /// https://microsoft.github.io/DirectX-Specs/d3d/CountersAndQueries.html
@@ -2191,6 +2326,24 @@ pub const QueueSubmitDesc = extern struct {
     signal_fences: [*]const FenceSubmitDesc,
     signal_fence_num: u32 = 0,
     swap_chain: ?*const SwapChain = null, // required if "NRILowLatency" is enabled in the swap chain
+
+    pub const Options = struct {
+        wait_fences: []const FenceSubmitDesc,
+        command_buffers: []const *CommandBuffer,
+        signal_fences: []const FenceSubmitDesc,
+        swap_chain: ?*const SwapChain = null,
+    };
+    pub fn from(opts: Options) @This() {
+        return .{
+            .wait_fences = opts.wait_fences.ptr,
+            .wait_fence_num = @intCast(opts.wait_fences.len),
+            .command_buffers = opts.command_buffers.ptr,
+            .command_buffer_num = @intCast(opts.command_buffers.len),
+            .signal_fences = opts.signal_fences.ptr,
+            .signal_fence_num = @intCast(opts.signal_fences.len),
+            .swap_chain = opts.swap_chain,
+        };
+    }
 };
 
 // Clear
