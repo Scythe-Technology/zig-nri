@@ -339,6 +339,37 @@ pub const CoreInterface = extern struct {
         return fence;
     }
 
+    pub fn createManyCommandAllocators(self: CoreInterface, comptime static_size: comptime_int, queue: *Queue) ![static_size]*CommandAllocator {
+        var command_allocators: [static_size]*CommandAllocator = undefined;
+        var created: usize = 0;
+        errdefer for (command_allocators[0..created]) |a| self.DestroyCommandAllocator(a);
+        for (0..static_size) |i| {
+            command_allocators[i] = try self.createCommandAllocator(queue);
+            created = i;
+        }
+        return command_allocators;
+    }
+    pub fn createManyCommandBuffers(self: CoreInterface, comptime static_size: comptime_int, command_allocators: [static_size]*CommandAllocator) ![static_size]*CommandBuffer {
+        var command_buffers: [static_size]*CommandBuffer = undefined;
+        var created: usize = 0;
+        errdefer for (command_buffers[0..created]) |b| self.DestroyCommandBuffer(b);
+        for (0..static_size) |i| {
+            command_buffers[i] = try self.createCommandBuffer(command_allocators[i]);
+            created = i;
+        }
+        return command_buffers;
+    }
+    pub fn createManyFences(self: CoreInterface, comptime static_size: comptime_int, device: *Device, size: usize, initial_value: u64) ![static_size]*Fence {
+        var fences: [static_size]*Fence = undefined;
+        var created: usize = 0;
+        errdefer for (fences[0..created]) |f| self.DestroyFence(f);
+        for (0..size) |i| {
+            fences[i] = try self.createFence(device, initial_value);
+            created = i;
+        }
+        return fences;
+    }
+
     pub fn createPipelineLayout(self: CoreInterface, device: *Device, opts: PipelineLayoutDesc.Options) !*PipelineLayout {
         var pipeline_layout: *PipelineLayout = undefined;
         try self.CreatePipelineLayout(device, &.from(opts), &pipeline_layout).success();

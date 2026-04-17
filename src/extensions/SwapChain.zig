@@ -172,4 +172,16 @@ pub const SwapChainInterface = extern struct {
         const textures = self.GetSwapChainTextures(swap_chain, &texture_num);
         return textures[0..texture_num];
     }
+
+    pub fn acquireNextTexture(self: SwapChainInterface, swap_chain: *SwapChain, acquire_semaphore: *Fence) !u32 {
+        var texture_index: u32 = 0;
+        try self.AcquireNextTexture(swap_chain, acquire_semaphore, &texture_index).success();
+        return texture_index;
+    }
+    pub inline fn waitForPresent(self: SwapChainInterface, swap_chain: *SwapChain) !void {
+        try self.WaitForPresent(swap_chain).success();
+    }
+    pub inline fn queuePresent(self: SwapChainInterface, swap_chain: *SwapChain, release_semaphore: *Fence) !void {
+        try self.QueuePresent(swap_chain, release_semaphore).success();
+    }
 };
