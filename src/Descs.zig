@@ -1559,6 +1559,14 @@ pub const RootConstantDesc = extern struct { // aka push constants block
     register_index: u32,
     size: u32,
     shader_stages: StageFlags,
+
+    pub fn constant(comptime T: type, register_index: u32, shader_stages: StageFlags) RootConstantDesc {
+        return .{
+            .register_index = register_index,
+            .size = @sizeOf(T),
+            .shader_stages = shader_stages,
+        };
+    }
 };
 
 pub const RootDescriptorDesc = extern struct { // aka push descriptor

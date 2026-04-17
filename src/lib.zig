@@ -338,6 +338,21 @@ pub const CoreInterface = extern struct {
         try self.CreateFence(device, initial_value, &fence).success();
         return fence;
     }
+    pub fn createPipelineLayout(self: CoreInterface, device: *Device, opts: PipelineLayoutDesc.Options) !*PipelineLayout {
+        var pipeline_layout: *PipelineLayout = undefined;
+        try self.CreatePipelineLayout(device, &.from(opts), &pipeline_layout).success();
+        return pipeline_layout;
+    }
+    pub fn createGraphicsPipeline(self: CoreInterface, device: *Device, opts: GraphicsPipelineDesc.Options) !*Pipeline {
+        var pipeline: *Pipeline = undefined;
+        try self.CreateGraphicsPipeline(device, &.from(opts), &pipeline).success();
+        return pipeline;
+    }
+    pub fn createTextureView(self: CoreInterface, texture_view_desc: TextureViewDesc) !*Descriptor {
+        var texture_view: *Descriptor = undefined;
+        try self.CreateTextureView(&texture_view_desc, &texture_view).success();
+        return texture_view;
+    }
 
     pub fn createManyCommandAllocators(self: CoreInterface, comptime static_size: comptime_int, queue: *Queue) ![static_size]*CommandAllocator {
         var command_allocators: [static_size]*CommandAllocator = undefined;
@@ -368,22 +383,6 @@ pub const CoreInterface = extern struct {
             created = i;
         }
         return fences;
-    }
-
-    pub fn createPipelineLayout(self: CoreInterface, device: *Device, opts: PipelineLayoutDesc.Options) !*PipelineLayout {
-        var pipeline_layout: *PipelineLayout = undefined;
-        try self.CreatePipelineLayout(device, &.from(opts), &pipeline_layout).success();
-        return pipeline_layout;
-    }
-    pub fn createGraphicsPipeline(self: CoreInterface, device: *Device, opts: GraphicsPipelineDesc.Options) !*Pipeline {
-        var pipeline: *Pipeline = undefined;
-        try self.CreateGraphicsPipeline(device, &.from(opts), &pipeline).success();
-        return pipeline;
-    }
-    pub fn createTextureView(self: CoreInterface, texture_view_desc: TextureViewDesc) !*Descriptor {
-        var texture_view: *Descriptor = undefined;
-        try self.CreateTextureView(&texture_view_desc, &texture_view).success();
-        return texture_view;
     }
 
     pub fn createCommittedBuffer(self: CoreInterface, device: *Device, memory_location: MemoryLocation, priority: f32, buffer_desc: BufferDesc) !*Buffer {
